@@ -1,0 +1,39 @@
+## --- Временные файлы компиляции .NET ---
+[Bb]in/
+[Oo]bj/
+
+## --- Rider / IntelliJ / Visual Studio ---
+.idea/
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+## --- Пакеты и зависимости ---
+# NuGet-пакеты восстанавливаются автоматически, их не нужно хранить в Git
+packages/
+*.nuget.props
+*.nuget.targets
+node_modules/
+
+## --- Специфично для Avalonia ---
+# Временные файлы предпросмотра (Previewer)
+.avalonia/
+# Если используете встроенный браузер для WebAssembly (Wasm)
+AppBundle/
+
+## --- Локальные настройки и логи ---
+*.log
+.DS_Store
+Thumbs.db
+*.swp
+
+## --- Публикация и артефакты ---
+publish/
+*.nupkg
+*.zip
+*.tar.gz
+
+## --- Файлы операционной системы ---
+[Dd]esktop.ini
+$RECYCLE.BIN/

@@ -1,0 +1,105 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:EquationSolver.ViewModels"
+        xmlns:oxy="clr-namespace:OxyPlot.Avalonia;assembly=OxyPlot.Avalonia"
+        xmlns:viewModels="clr-namespace:EquationSolver.ViewModels"
+        x:Class="EquationSolver.Views.MainWindow"
+        Title="Розв'язання нелінійних рівняннь" Width="1150" Height="750"
+        RequestedThemeVariant="Dark"
+        x:DataType="viewModels:MainWindowViewModel">
+
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+
+    <Grid ColumnDefinitions="450, *" Margin="10">
+        <!-- Ліва панель налаштувань та вводу -->
+        <Grid Grid.Column="0" RowDefinitions="Auto, *, Auto" Margin="0,0,10,0">
+            <StackPanel Grid.Row="0" Spacing="10">
+                <TextBlock Text="Налаштування системи" FontWeight="Bold" FontSize="16"/>
+                
+                <TextBlock Text="Тип системи:"/>
+                <ComboBox ItemsSource="{Binding SystemTypeNames}" 
+                          SelectedItem="{Binding SelectedSystemName}" 
+                          HorizontalAlignment="Stretch"/>
+
+                <!-- Візуалізація системи -->
+                <Border Background="#2D2D30" CornerRadius="5" Padding="10">
+                    <StackPanel>
+                        <TextBlock Text="Вигляд i-го рівняння:" FontWeight="Bold" Foreground="LightSkyBlue" Margin="0,0,0,5"/>
+                        <TextBlock Text="{Binding SystemFormulaRepresentation}" TextWrapping="Wrap" FontStyle="Italic" Foreground="White"/>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Text="Метод розв'язання:"/>
+                <ComboBox ItemsSource="{Binding MethodTypeNames}" 
+                          SelectedItem="{Binding SelectedMethodName}" 
+                          HorizontalAlignment="Stretch"/>
+                
+                <TextBlock Text="Розмірність (n) [від 2 до 10]:"/>
+                <NumericUpDown Value="{Binding Dimension}" 
+                               Minimum="2" Maximum="10" FormatString="0"/>
+
+
+                <TextBlock Text="Точність:"/>
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <TextBlock Text="Знаки після коми:" VerticalAlignment="Center" FontSize="16"/>
+                    <NumericUpDown Value="{Binding ToleranceExponent}" Minimum="3" Maximum="12" FormatString="0" Width="100"/>
+                </StackPanel>
+                
+                <TextBlock Text="Коефіцієнти та початкове наближення:" FontWeight="Bold" Margin="0,10,0,0"/>
+                
+                <Grid ColumnDefinitions="30, *, *, *, *, *" Margin="0,5,0,0">
+                    <TextBlock Grid.Column="0" Text="i" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="A" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="B" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="3" Text="C" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="4" Text="D" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="5" Text="X₀" FontWeight="Bold" HorizontalAlignment="Center" Foreground="Yellow"/>
+                </Grid>
+            </StackPanel>
+
+            <!-- Динамічний список коефіцієнтів -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,5,0,10">
+                <ItemsControl ItemsSource="{Binding EquationRows}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="30, *, *, *, *, *" Margin="0,2">
+                                <TextBlock Grid.Column="0" Text="{Binding Index}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <NumericUpDown Grid.Column="1" Value="{Binding A}" FormatString="0.##" Minimum="-1000000" Maximum="1000000" Increment="0.1" Margin="2,0" ShowButtonSpinner="False"/>
+                                <NumericUpDown Grid.Column="2" Value="{Binding B}" FormatString="0.##" Minimum="-1000000" Maximum="1000000" Increment="0.1" Margin="2,0" ShowButtonSpinner="False"/>
+                                <NumericUpDown Grid.Column="3" Value="{Binding C}" FormatString="0.##" Minimum="-1000000" Maximum="1000000" Increment="0.1" Margin="2,0" ShowButtonSpinner="False"/>
+                                <NumericUpDown Grid.Column="4" Value="{Binding D}" FormatString="0.##" Minimum="-1000000" Maximum="1000000" Increment="0.1" Margin="2,0" ShowButtonSpinner="False"/>
+                                <NumericUpDown Grid.Column="5" Value="{Binding X0}" FormatString="0.##" Minimum="-1000000" Maximum="1000000" Increment="0.1" Margin="2,0" ShowButtonSpinner="False" Background="#3E3E20"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Кнопки та результати -->
+            <StackPanel Grid.Row="2" Spacing="10">
+                <Button Content="Розв'язати" Command="{Binding SolveCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Background="#005A9E"/>
+                <Button Content="Зберегти звіт у файл" Command="{Binding SaveCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+
+                <TextBlock Text="{Binding ValidationMessage}" Foreground="Red" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding SuccessMessage}" Foreground="LightGreen" TextWrapping="Wrap"/>
+                
+                <StackPanel Margin="0,5,0,0">
+                    <TextBlock Text="Практична складність:" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding IterationsCount, StringFormat='Кількість ітерацій: {0}'}"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <!-- Права панель графіка та таблиці -->
+        <Grid Grid.Column="1" RowDefinitions="*, *">
+            <DataGrid Grid.Row="0" ItemsSource="{Binding IterationHistory}" AutoGenerateColumns="True" IsReadOnly="True" Margin="0,0,0,10">
+            </DataGrid>
+
+            <!-- Графік -->
+            <oxy:PlotView Grid.Row="1" Model="{Binding PlotModel}" IsVisible="{Binding IsGraphVisible}" Background="White"/>
+            <TextBlock Grid.Row="1" Text="Графік доступний лише для n = 2" Foreground="Gray" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !IsGraphVisible}"/>
+        </Grid>
+    </Grid>
+</Window>
