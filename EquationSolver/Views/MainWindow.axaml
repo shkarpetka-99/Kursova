@@ -4,7 +4,7 @@
         xmlns:oxy="clr-namespace:OxyPlot.Avalonia;assembly=OxyPlot.Avalonia"
         xmlns:viewModels="clr-namespace:EquationSolver.ViewModels"
         x:Class="EquationSolver.Views.MainWindow"
-        Title="Розв'язання нелінійних рівняннь" Width="1150" Height="750"
+        Title="Розв'язання нелінійних рівняннь" Width="1920" Height="1080"
         RequestedThemeVariant="Dark"
         x:DataType="viewModels:MainWindowViewModel">
 
@@ -64,6 +64,7 @@
                 <ItemsControl ItemsSource="{Binding EquationRows}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
+                            <StackPanel>
                             <Grid ColumnDefinitions="30, *, *, *, *, *" Margin="0,2">
                                 <TextBlock Grid.Column="0" Text="{Binding Index}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                 <NumericUpDown Grid.Column="1" Value="{Binding A}" FormatString="0.##" Minimum="-1000000" Maximum="1000000" Increment="0.1" Margin="2,0" ShowButtonSpinner="False"/>
@@ -72,6 +73,11 @@
                                 <NumericUpDown Grid.Column="4" Value="{Binding D}" FormatString="0.##" Minimum="-1000000" Maximum="1000000" Increment="0.1" Margin="2,0" ShowButtonSpinner="False"/>
                                 <NumericUpDown Grid.Column="5" Value="{Binding X0}" FormatString="0.##" Minimum="-1000000" Maximum="1000000" Increment="0.1" Margin="2,0" ShowButtonSpinner="False" Background="#3E3E20"/>
                             </Grid>
+                            <TextBlock Text="{Binding RowError}" 
+                                       Foreground="Red" 
+                                       FontSize="10" 
+                                       IsVisible="{Binding RowError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                        </StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

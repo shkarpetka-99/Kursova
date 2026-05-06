@@ -91,13 +91,6 @@ namespace EquationSolver.ViewModels
                     return;
                 }
 
-                if (value < 2 || value > 10)
-                {
-                    ValidationMessage = "Розмірність має бути від 2 до 10!";
-                    OnPropertyChanged();
-                    return;
-                }
-
                 if (SetProperty(ref field, value))
                 {
                     ValidationMessage = "";
@@ -419,48 +412,6 @@ namespace EquationSolver.ViewModels
                 }
             }
         }
-    }
-
-    public class EquationRowViewModel : ViewModelBase
-    {
-        public int Index
-        {
-            get;
-            set => SetProperty(ref field, value);
-        }
-
-        public decimal A
-        {
-            get;
-            set
-            {
-                SetProperty(ref field, value);
-            }
-        } = 1m;
-
-        public decimal B
-        {
-            get;
-            set => SetProperty(ref field, value);
-        } = 1m;
-
-        public decimal C
-        {
-            get;
-            set => SetProperty(ref field, value);
-        } = 1m;
-
-        public decimal D
-        {
-            get;
-            set => SetProperty(ref field, value);
-        } = 0m;
-
-        public decimal X0
-        {
-            get;
-            set => SetProperty(ref field, value);
-        } = 1m;
     }
 
     public class IterationRow
