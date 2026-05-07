@@ -1,7 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:EquationSolver.ViewModels"
-        xmlns:oxy="clr-namespace:OxyPlot.Avalonia;assembly=OxyPlot.Avalonia"
         xmlns:viewModels="clr-namespace:EquationSolver.ViewModels"
         x:Class="EquationSolver.Views.MainWindow"
         Title="Розв'язання нелінійних рівняннь" Width="1920" Height="1080"
@@ -87,7 +86,11 @@
             <StackPanel Grid.Row="2" Spacing="10">
                 <Button Content="Розв'язати" Command="{Binding SolveCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Background="#005A9E"/>
                 <Button Content="Зберегти звіт у файл" Command="{Binding SaveCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
-
+                <Button Content="Зберегти графік (PNG)"
+                        Command="{Binding SaveGraphCommand}"
+                        IsVisible="{Binding IsGraphVisible}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+                
                 <TextBlock Text="{Binding ValidationMessage}" Foreground="Red" TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding SuccessMessage}" Foreground="LightGreen" TextWrapping="Wrap"/>
                 
@@ -98,14 +101,10 @@
             </StackPanel>
         </Grid>
 
-        <!-- Права панель графіка та таблиці -->
-        <Grid Grid.Column="1" RowDefinitions="*, *">
-            <DataGrid Grid.Row="0" ItemsSource="{Binding IterationHistory}" AutoGenerateColumns="True" IsReadOnly="True" Margin="0,0,0,10">
+        <!-- Права панель таблиці -->
+        <Grid Grid.Column="1">
+            <DataGrid Grid.Row="0" ItemsSource="{Binding IterationHistory}" AutoGenerateColumns="True" IsReadOnly="True" Margin="0">
             </DataGrid>
-
-            <!-- Графік -->
-            <oxy:PlotView Grid.Row="1" Model="{Binding PlotModel}" IsVisible="{Binding IsGraphVisible}" Background="White"/>
-            <TextBlock Grid.Row="1" Text="Графік доступний лише для n = 2" Foreground="Gray" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !IsGraphVisible}"/>
         </Grid>
     </Grid>
 </Window>
