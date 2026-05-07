@@ -20,9 +20,6 @@ namespace EquationSolver.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public Array SystemTypes => Enum.GetValues<SystemType>();
-        public Array MethodTypes => Enum.GetValues<MethodType>();
-
         public string[] SystemTypeNames => new[] { "Степенева", "Тригонометрична", "Експоненціальна" };
         public string[] MethodTypeNames => new[] { "Метод Ньютона", "Метод січних" };
 
@@ -87,7 +84,7 @@ namespace EquationSolver.ViewModels
                 {
                     field = null;
                     OnPropertyChanged();
-                    ValidationMessage = "Будь ласка, введіть число від 2 до 10";
+                    ValidationMessage = "Будь ласка, введіть число";
                     return;
                 }
 
@@ -106,10 +103,24 @@ namespace EquationSolver.ViewModels
             set => SetProperty(ref field, value);
         } = "";
 
-        public decimal ToleranceExponent
+        public decimal? ToleranceExponent
         {
             get;
-            set => SetProperty(ref field, Math.Clamp(value, 3, 12));
+            set
+            {
+                if (value == null)
+                {
+                    field = null;
+                    OnPropertyChanged();
+                    ValidationMessage = "Будь ласка, введіть число";
+                    return;
+                }
+
+                if (SetProperty(ref field, value))
+                {
+                    ValidationMessage = "";
+                }
+            }
         } = 7;
 
         public string? ValidationMessage
@@ -264,7 +275,7 @@ namespace EquationSolver.ViewModels
             }
             catch (Exception ex)
             {
-                ValidationMessage = "Помилка валідації: " + (ex.Message == "Nullable object must have a value." ? "Всі поля повинні мати значення" : ex.Message);
+                ValidationMessage = "Помилка: " + (ex.Message == "Nullable object must have a value." ? "Всі поля повинні мати значення" : ex.Message);
             }
         }
 
@@ -407,7 +418,7 @@ namespace EquationSolver.ViewModels
                     }
 
                     await using var stream = await file.OpenWriteAsync();
-                    using var writer = new StreamWriter(stream);
+                    await using var writer = new StreamWriter(stream);
                     await writer.WriteAsync(sb.ToString());
                 }
             }

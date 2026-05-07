@@ -52,7 +52,7 @@ public class EquationRowViewModel : ViewModelBase
         {
             field = null;
             OnPropertyChanged(propertyName); 
-            RowError = "Коефіцієнт не може бути порожнім!";
+            RowError = "Поле не може бути порожнім!";
             return;
         }
         
