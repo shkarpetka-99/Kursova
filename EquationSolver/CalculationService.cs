@@ -5,7 +5,7 @@ using EquationSolver.Models;
 
 namespace EquationSolver;
 
-public class CalculationService
+public static class CalculationService
 {
     public static SolvingResult Run(SystemType sysType, MethodType methodType, int n, double[] coeffs, double[] initialGuess, double tolerance)
     {
