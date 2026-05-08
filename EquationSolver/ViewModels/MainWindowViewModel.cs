@@ -166,8 +166,8 @@ namespace EquationSolver.ViewModels
         public MainWindowViewModel()
         {
             SolveCommand = new RelayCommand(Solve);
-            SaveCommand = new RelayCommand(SaveToFileAsync, () => _lastResult != null);
-            SaveGraphCommand = new RelayCommand(SaveGraphToFileAsync,
+            SaveCommand = new RelayCommand(SaveToFile, () => _lastResult != null);
+            SaveGraphCommand = new RelayCommand(SaveGraphToFile,
                 () => _lastResult != null && _lastResult.IsSuccess && Dimension == 2);
             SelectedSystemName = SystemTypeNames[0];
             SelectedMethodName = MethodTypeNames[0];
@@ -397,7 +397,7 @@ namespace EquationSolver.ViewModels
             return result;
         }
         
-        private async void SaveGraphToFileAsync()
+        private async void SaveGraphToFile()
         {
             if (PlotModel == null || (int)Dimension != 2) return;
 
@@ -435,7 +435,7 @@ namespace EquationSolver.ViewModels
             }
         }
 
-        private async void SaveToFileAsync()
+        private async void SaveToFile()
         {
             if (_lastResult == null) return;
 
