@@ -46,7 +46,7 @@ public class EquationRowViewModel : ViewModelBase
         set => SetProperty(ref field, value);
     } = "";
 
-    private void SetCoefficient(ref decimal? field, decimal? value, [CallerMemberName] string propertyName = null)
+    private void SetCoefficient(ref decimal? field, decimal? value, [CallerMemberName] string? propertyName = null)
     {
         if (value == null)
         {
