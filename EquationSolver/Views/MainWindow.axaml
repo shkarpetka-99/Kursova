@@ -3,7 +3,7 @@
         xmlns:vm="using:EquationSolver.ViewModels"
         xmlns:viewModels="clr-namespace:EquationSolver.ViewModels"
         x:Class="EquationSolver.Views.MainWindow"
-        Title="Розв'язання нелінійних рівняннь" Width="1920" Height="1080"
+        Title="Розв'язання систем нелінійних рівнянь" Width="1920" Height="1080"
         RequestedThemeVariant="Dark"
         x:DataType="viewModels:MainWindowViewModel">
 
