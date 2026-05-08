@@ -29,6 +29,10 @@ public class NewtonSolver : IEquationSolver
                 gauss.Solve();
                 double[] deltaX = gauss.Result;
 
+                if (deltaX.Any(double.IsNaN) || deltaX.Any(double.IsInfinity))
+                {
+                    return new SolvingResult(null, iter + 1, history, false, "Числова розбіжність (занадто великі значення).");
+                }
                 for (int i = 0; i < xk.Length; i++)
                 {
                     xk[i] += deltaX[i];

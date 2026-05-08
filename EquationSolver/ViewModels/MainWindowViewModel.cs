@@ -217,20 +217,20 @@ namespace EquationSolver.ViewModels
                 double tolerance = Math.Pow(10, -(double)ToleranceExponent);
                 int decPlaces = (int)ToleranceExponent;
 
-                double[] coeffs = new double[dim * 4];
+                double[] coefficients = new double[dim * 4];
                 double[] initialGuess = new double[dim];
 
                 for (int i = 0; i < dim; i++)
                 {
                     var row = EquationRows[i];
-                    coeffs[i * 4] = (double)row.A;
-                    coeffs[i * 4 + 1] = (double)row.B;
-                    coeffs[i * 4 + 2] = (double)row.C;
-                    coeffs[i * 4 + 3] = (double)row.D;
+                    coefficients[i * 4] = (double)row.A;
+                    coefficients[i * 4 + 1] = (double)row.B;
+                    coefficients[i * 4 + 2] = (double)row.C;
+                    coefficients[i * 4 + 3] = (double)row.D;
                     initialGuess[i] = (double)row.X0;
                 }
 
-                _lastResult = CalculationService.Run(SelectedSystemType, SelectedMethodType, dim, coeffs, initialGuess,
+                _lastResult = CalculationService.Run(SelectedSystemType, SelectedMethodType, dim, coefficients, initialGuess,
                     tolerance);
                 IterationsCount = _lastResult.Iterations;
 
@@ -254,9 +254,9 @@ namespace EquationSolver.ViewModels
                 {
                     EquationSystem systemLocal = SelectedSystemType switch
                     {
-                        SystemType.Power => new PowerSystem(2, coeffs),
-                        SystemType.Trigonometric => new TrigonometricSystem(2, coeffs),
-                        SystemType.Exponential => new ExponentialSystem(2, coeffs),
+                        SystemType.Power => new PowerSystem(2, coefficients),
+                        SystemType.Trigonometric => new TrigonometricSystem(2, coefficients),
+                        SystemType.Exponential => new ExponentialSystem(2, coefficients),
                         _ => throw new Exception("Unknown system")
                     };
                     DrawGraph(_lastResult, systemLocal);
