@@ -10,10 +10,10 @@ public abstract class EquationSystem
     protected EquationSystem(int n, double[] coefficients, int coefficientsPerEquation)
     {
         if (n < 2 || n > 10)
-            throw new ArgumentException("Dimension must be 2-10.");
+            throw new ArgumentException("Кількість рівнянь повинна бути 2-10.");
 
         if (coefficients == null || coefficients.Length < n * coefficientsPerEquation)
-            throw new ArgumentException($"Required {n * coefficientsPerEquation} coefficients.");
+            throw new ArgumentException($"Необхідно {n * coefficientsPerEquation} коєфіцієнтів.");
 
         Dimension = n;
         Coefficients = coefficients;

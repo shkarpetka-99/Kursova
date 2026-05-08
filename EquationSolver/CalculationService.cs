@@ -14,14 +14,14 @@ public class CalculationService
             SystemType.Power => new PowerSystem(n, coeffs),
             SystemType.Trigonometric => new TrigonometricSystem(n, coeffs),
             SystemType.Exponential => new ExponentialSystem(n, coeffs),
-            _ => throw new ArgumentException("Unknown system")
+            _ => throw new ArgumentException("Невідома система")
         };
 
         IEquationSolver solver = methodType switch
         {
             MethodType.Newton => new NewtonSolver(),
             MethodType.Secant => new SecantSolver(),
-            _ => throw new ArgumentException("Unknown method")
+            _ => throw new ArgumentException("Невідомий метод")
         };
         solver.Tolerance = tolerance;
         return solver.Solve(system, initialGuess);

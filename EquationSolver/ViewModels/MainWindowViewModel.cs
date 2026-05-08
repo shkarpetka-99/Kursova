@@ -451,53 +451,61 @@ namespace EquationSolver.ViewModels
 
                 if (file != null)
                 {
-                    var sb = new StringBuilder();
-                    int dec = (int)ToleranceExponent;
-                    sb.AppendLine("Результати розв'язання");
-                    sb.AppendLine($"Метод: {SelectedMethodName}");
-                    sb.AppendLine($"Система: {SelectedSystemName}");
-                    sb.AppendLine(
-                        SystemFormulaRepresentation = SelectedSystemType switch
+                    try
+                    {
+                        var sb = new StringBuilder();
+                        int dec = (int)ToleranceExponent;
+                        sb.AppendLine("Результати розв'язання");
+                        sb.AppendLine($"Метод: {SelectedMethodName}");
+                        sb.AppendLine($"Система: {SelectedSystemName}");
+                        sb.AppendLine(
+                            SystemFormulaRepresentation = SelectedSystemType switch
+                            {
+                                SystemType.Power => "fᵢ(x) = A · x²ᵢ₋₁ + B · x³ᵢ + C · xᵢ₊₁ · xᵢ - D = 0",
+                                SystemType.Trigonometric =>
+                                    "fᵢ(x) = A · sin(xᵢ₋₁) + B · sin(xᵢ₋₁)cos(xᵢ) + C · cos²(xᵢ₊₁) - D = 0",
+                                SystemType.Exponential => "fᵢ(x) = A · eˣ₋ⁱ + B · xᵢ₋₁ + C · xᵢ₊₁ - D = 0",
+                                _ => ""
+                            });
+                        sb.AppendLine($"Розмірність: {Dimension}");
+                        sb.AppendLine("Коєфіцієнти");
+                        sb.AppendLine(string.Format("{0,-4} | {1,-8} | {2,-8} | {3,-8} | {4,-8} | {5,-8}",
+                            "i", "A", "B", "C", "D", "X0"));
+                        sb.AppendLine(new string('-', 55));
+                        foreach (var row in EquationRows)
                         {
-                            SystemType.Power => "fᵢ(x) = A · x²ᵢ₋₁ + B · x³ᵢ + C · xᵢ₊₁ · xᵢ - D = 0",
-                            SystemType.Trigonometric =>
-                                "fᵢ(x) = A · sin(xᵢ₋₁) + B · sin(xᵢ₋₁)cos(xᵢ) + C · cos²(xᵢ₊₁) - D = 0",
-                            SystemType.Exponential => "fᵢ(x) = A · eˣ₋ⁱ + B · xᵢ₋₁ + C · xᵢ₊₁ - D = 0",
-                            _ => ""
-                        });
-                    sb.AppendLine($"Розмірність: {Dimension}");
-                    sb.AppendLine("Коєфіцієнти");
-                    sb.AppendLine(string.Format("{0,-4} | {1,-8} | {2,-8} | {3,-8} | {4,-8} | {5,-8}",
-                        "i", "A", "B", "C", "D", "X0"));
-                    sb.AppendLine(new string('-', 55));
-                    foreach (var row in EquationRows)
-                    {
-                        sb.AppendLine(string.Format(
-                            "{0,-4} | {1,-8:F2} | {2,-8:F2} | {3,-8:F2} | {4,-8:F2} | {5,-8:F2}",
-                            row.Index, row.A, row.B, row.C, row.D, row.X0));
+                            sb.AppendLine(string.Format(
+                                "{0,-4} | {1,-8:F2} | {2,-8:F2} | {3,-8:F2} | {4,-8:F2} | {5,-8:F2}",
+                                row.Index, row.A, row.B, row.C, row.D, row.X0));
+                        }
+
+                        sb.AppendLine($"Точність: 1e-{ToleranceExponent}");
+                        sb.AppendLine($"Кількість ітерацій: {IterationsCount}");
+                        sb.AppendLine();
+                        sb.AppendLine("Статус: " + (_lastResult.IsSuccess
+                            ? "Успіх"
+                            : "Розбіжність/Помилка: " + _lastResult.ErrorMessage));
+
+                        if (_lastResult.Solution != null)
+                            sb.AppendLine(
+                                $"Знайдені корені: {string.Join(", ", _lastResult.Solution.Select(v => v.ToString($"F{dec}")))}");
+
+                        sb.AppendLine("\nКроки ітерацій:");
+                        for (int i = 0; i < _lastResult.History.Count; i++)
+                        {
+                            sb.AppendLine(
+                                $"Крок {i}: {string.Join(", ", _lastResult.History[i].Select(v => v.ToString($"F{dec}")))}");
+                        }
+
+                        await using var stream = await file.OpenWriteAsync();
+                        await using var writer = new StreamWriter(stream);
+                        await writer.WriteAsync(sb.ToString());
+                        SuccessMessage = "Звіт успішно збережено!";
                     }
-
-                    sb.AppendLine($"Точність: 1e-{ToleranceExponent}");
-                    sb.AppendLine($"Кількість ітерацій: {IterationsCount}");
-                    sb.AppendLine();
-                    sb.AppendLine("Статус: " + (_lastResult.IsSuccess
-                        ? "Успіх"
-                        : "Розбіжність/Помилка: " + _lastResult.ErrorMessage));
-
-                    if (_lastResult.Solution != null)
-                        sb.AppendLine(
-                            $"Знайдені корені: {string.Join(", ", _lastResult.Solution.Select(v => v.ToString($"F{dec}")))}");
-
-                    sb.AppendLine("\nКроки ітерацій:");
-                    for (int i = 0; i < _lastResult.History.Count; i++)
+                    catch (Exception ex)
                     {
-                        sb.AppendLine(
-                            $"Крок {i}: {string.Join(", ", _lastResult.History[i].Select(v => v.ToString($"F{dec}")))}");
+                        ValidationMessage = "Помилка збереження звіту: " + ex.Message;
                     }
-
-                    await using var stream = await file.OpenWriteAsync();
-                    await using var writer = new StreamWriter(stream);
-                    await writer.WriteAsync(sb.ToString());
                 }
             }
         }
