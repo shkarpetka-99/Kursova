@@ -230,7 +230,8 @@ namespace EquationSolver.ViewModels
                     initialGuess[i] = (double)row.X0;
                 }
 
-                _lastResult = CalculationService.Run(SelectedSystemType, SelectedMethodType, dim, coefficients, initialGuess,
+                _lastResult = CalculationService.Run(SelectedSystemType, SelectedMethodType, dim, coefficients,
+                    initialGuess,
                     tolerance);
                 IterationsCount = _lastResult.Iterations;
 
@@ -309,16 +310,12 @@ namespace EquationSolver.ViewModels
                 TicklineColor = OxyColors.Black
             });
         }
-        
-        
+
+
         private void DrawGraph(SolvingResult result, EquationSystem system)
         {
-            double centerX = result.IsSuccess && result.Solution != null
-                ? result.Solution[0]
-                : (double)EquationRows[0].X0;
-            double centerY = result.IsSuccess && result.Solution != null
-                ? result.Solution[1]
-                : (double)EquationRows[1].X0;
+            double centerX = result.Solution[0];
+            double centerY = result.Solution[1];
             double spread = 5.0;
 
             int gridSize = 100;
@@ -361,22 +358,19 @@ namespace EquationSolver.ViewModels
                 StrokeThickness = 2
             });
 
-            if (result.IsSuccess && result.Solution != null)
+            var endPoint = new ScatterSeries
             {
-                var endPoint = new ScatterSeries
-                {
-                    MarkerType = MarkerType.Circle,
-                    MarkerSize = 6,
-                    MarkerFill = OxyColors.Blue,
-                    MarkerStroke = OxyColors.Black,
-                    MarkerStrokeThickness = 1,
-                    Title = $"Точка перетину (розв'язок) ({result.Solution[0]:F3}, {result.Solution[1]:F3})"
-                };
-                endPoint.Points.Add(new ScatterPoint(result.Solution[0], result.Solution[1]));
-                PlotModel?.Series.Add(endPoint);
-            }
+                MarkerType = MarkerType.Circle,
+                MarkerSize = 6,
+                MarkerFill = OxyColors.Blue,
+                MarkerStroke = OxyColors.Black,
+                MarkerStrokeThickness = 1,
+                Title = "Точка перетину (розв'язок)"
+            };
+            endPoint.Points.Add(new ScatterPoint(result.Solution[0], result.Solution[1]));
+            PlotModel?.Series.Add(endPoint);
         }
-        
+
         private double[] GenerateLinearSpace(double start, double end, int steps)
         {
             double[] result = new double[steps];
@@ -384,7 +378,7 @@ namespace EquationSolver.ViewModels
             for (int i = 0; i < steps; i++) result[i] = start + i * step;
             return result;
         }
-        
+
         private async void SaveGraphToFile()
         {
             if (_lastResult == null) return;
@@ -412,17 +406,17 @@ namespace EquationSolver.ViewModels
                             coefficients[i * 4 + 2] = (double)EquationRows[i].C;
                             coefficients[i * 4 + 3] = (double)EquationRows[i].D;
                         }
-                        
+
                         EquationSystem systemLocal = SelectedSystemType switch
-                            {
-                                SystemType.Power => new PowerSystem(2, coefficients),
-                                SystemType.Trigonometric => new TrigonometricSystem(2, coefficients),
-                                SystemType.Exponential => new ExponentialSystem(2, coefficients),
-                                _ => throw new Exception("Невідома система")
-                            };
-                        
+                        {
+                            SystemType.Power => new PowerSystem(2, coefficients),
+                            SystemType.Trigonometric => new TrigonometricSystem(2, coefficients),
+                            SystemType.Exponential => new ExponentialSystem(2, coefficients),
+                            _ => throw new Exception("Невідома система")
+                        };
+
                         DrawGraph(_lastResult, systemLocal);
-                        
+
                         var exporter = new OxyPlot.Avalonia.PngExporter
                         {
                             Width = 1000,
