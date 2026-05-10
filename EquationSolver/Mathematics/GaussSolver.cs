@@ -35,7 +35,7 @@ public class GaussSolver
             (b[i], b[pivot]) = (b[pivot], b[i]);
 
             if (Math.Abs(a[i, i]) < 1e-15)
-                throw new InvalidOperationException("Матриця вироджена.");
+                throw new InvalidOperationException("Матриця Гаусса вироджена.");
 
             for (int j = i + 1; j < n; j++)
             {
