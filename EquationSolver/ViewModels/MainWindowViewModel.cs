@@ -243,7 +243,7 @@ namespace EquationSolver.ViewModels
                 if (_lastResult.IsSuccess)
                 {
                     Debug.Assert(_lastResult.Solution != null);
-                    SuccessMessage = "Успішно знайдено розв'язок:\n" + string.Join(", ",
+                    SuccessMessage = "Успішно знайдено розв'язок:\n" + string.Join("; ",
                         _lastResult.Solution.Select(v => v.ToString($"F{decPlaces}")));
                 }
                 else
@@ -489,13 +489,13 @@ namespace EquationSolver.ViewModels
 
                         if (_lastResult.Solution != null)
                             sb.AppendLine(
-                                $"Знайдені корені: {string.Join(", ", _lastResult.Solution.Select(v => v.ToString($"F{dec}")))}");
+                                $"Знайдені корені: {string.Join("; ", _lastResult.Solution.Select(v => v.ToString($"F{dec}")))}");
 
                         sb.AppendLine("\nКроки ітерацій:");
                         for (int i = 0; i < _lastResult.History.Count; i++)
                         {
                             sb.AppendLine(
-                                $"Крок {i}: {string.Join(", ", _lastResult.History[i].Select(v => v.ToString($"F{dec}")))}");
+                                $"Крок {i}: {string.Join("; ", _lastResult.History[i].Select(v => v.ToString($"F{dec}")))}");
                         }
 
                         await using var stream = await file.OpenWriteAsync();
@@ -520,7 +520,7 @@ namespace EquationSolver.ViewModels
         public IterationRow(int step, double[] values, int decimalPlaces)
         {
             Step = step;
-            Values = string.Join(",  ", values.Select(v => v.ToString($"F{decimalPlaces}")));
+            Values = string.Join(";  ", values.Select(v => v.ToString($"F{decimalPlaces}")));
         }
     }
 }
