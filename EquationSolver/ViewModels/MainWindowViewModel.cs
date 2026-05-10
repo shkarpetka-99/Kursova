@@ -249,18 +249,6 @@ namespace EquationSolver.ViewModels
                 {
                     ValidationMessage = "Метод не збігається. " + _lastResult.ErrorMessage;
                 }
-
-                if (dim == 2)
-                {
-                    EquationSystem systemLocal = SelectedSystemType switch
-                    {
-                        SystemType.Power => new PowerSystem(2, coefficients),
-                        SystemType.Trigonometric => new TrigonometricSystem(2, coefficients),
-                        SystemType.Exponential => new ExponentialSystem(2, coefficients),
-                        _ => throw new Exception("Unknown system")
-                    };
-                    DrawGraph(_lastResult, systemLocal);
-                }
             }
             catch (Exception ex)
             {
@@ -399,7 +387,7 @@ namespace EquationSolver.ViewModels
         
         private async void SaveGraphToFile()
         {
-            if (PlotModel == null || (int)Dimension != 2) return;
+            if (_lastResult == null) return;
 
             if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
@@ -416,6 +404,25 @@ namespace EquationSolver.ViewModels
                 {
                     try
                     {
+                        double[] coefficients = new double[8];
+                        for (int i = 0; i < 2; i++)
+                        {
+                            coefficients[i * 4] = (double)EquationRows[i].A;
+                            coefficients[i * 4 + 1] = (double)EquationRows[i].B;
+                            coefficients[i * 4 + 2] = (double)EquationRows[i].C;
+                            coefficients[i * 4 + 3] = (double)EquationRows[i].D;
+                        }
+                        
+                        EquationSystem systemLocal = SelectedSystemType switch
+                            {
+                                SystemType.Power => new PowerSystem(2, coefficients),
+                                SystemType.Trigonometric => new TrigonometricSystem(2, coefficients),
+                                SystemType.Exponential => new ExponentialSystem(2, coefficients),
+                                _ => throw new Exception("Невідома система")
+                            };
+                        
+                        DrawGraph(_lastResult, systemLocal);
+                        
                         var exporter = new OxyPlot.Avalonia.PngExporter
                         {
                             Width = 1000,
